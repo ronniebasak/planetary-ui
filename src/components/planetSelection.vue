@@ -1,5 +1,5 @@
 <template>
-  <div id="planet-selection">
+  <div id="planet-selection" :class="{selected : isSelected}">
 
     <template v-for="(planet, ind) in planet_data">
       <!-- left offscreen -->
@@ -16,7 +16,7 @@
     </div>
 
     <!-- current one -->
-    <div :key="planet.name" v-if="ind==pos" class="planet current-planet" data-bg="planet_data[pos-1].image">
+    <div :key="planet.name" v-if="ind==pos" class="planet current-planet" @click="selectPlanet">
       <img :src="require(`@/assets/${planet.image}`)" alt class="planet-image">
       <span class="planet-name">{{ planet.name }}</span>
     </div>
@@ -36,6 +36,8 @@
     </template>
 
     <div class="planet-highlight" :style="planet_data[pos].bg_style"></div>
+
+    <div class="planet-description"> {{ planet_data[pos].description }} </div>
 
     <!-- <button @click="nextPlanet">np</button> -->
   </div>
@@ -135,6 +137,52 @@
   top: calc(var(--planet-size) + 75%);
   font-size: 2em;
 }
+
+.planet-description {
+  color: transparent;
+  font-size: 1.5em;
+  padding: 30px;
+  text-align: center;
+  z-index: 950;
+  margin-top: 490%;
+  transition: all 0.3s ease-in-out;
+}
+
+.selected {
+  &#planet-selection {
+    height: 100%;
+  }
+
+  & .current-planet {
+    margin-top: -50%;
+    --hl-planet-size: 60vw;
+
+  }
+
+  & .prev-planet {
+    margin-left: -105vw;
+  }
+
+  & .next-planet {
+    margin-left: 105vw;
+  }
+
+  & .current-planet > .planet-name {
+    font-size: 3em;
+  }
+
+  & .planet-highlight {
+    width: 100vmax;
+    height: 100vmax;
+    border-radius: 0;
+    margin-left: 0;
+  }
+
+  & .planet-description {
+    margin-top: 100%;
+    color: white;
+  }
+}
 </style>
 
 
@@ -146,7 +194,8 @@ export default {
   data: function() {
     return {
       planet_data: planets,
-      pos: 3
+      pos: 3,
+      isSelected: false,
     };
   },
   created: function(){
@@ -161,6 +210,9 @@ export default {
       this.pos--;
       this.$emit('position-update', [(this.pos/this.planet_data.length)*100, this.planet_data[this.pos]] );
 
+    },
+    selectPlanet: function() {
+      this.isSelected = !this.isSelected;
     }
   }
 };
